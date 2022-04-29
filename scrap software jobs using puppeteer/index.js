@@ -19,11 +19,15 @@ async function main() {
   await page.goto("https://sfbay.craigslist.org/search/sof");
   const html = await page.content();
   const $ = cheerio.load(html);
-  const results = $(".result-title")
+  const results = $(".result-info")
     .map((index, element) => {
-      const title = $(element).text();
-      const url = $(element).attr("href");
-      return { title, url };
+      const titleElement = $(element).find("a.result-title");
+      const dateElement = $(element).find("time.result-date");
+      const title = titleElement.text();
+      const url = $(titleElement).attr("href");
+      const datePosted = new Date(dateElement.attr("datetime"));
+      const neighborhood = $(element).find("span.result-hood").text();
+      return { title, url, datePosted, neighborhood };
     })
     .get();
   console.log(results);
