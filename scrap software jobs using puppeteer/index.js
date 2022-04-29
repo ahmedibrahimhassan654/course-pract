@@ -11,11 +11,7 @@ const scrapingResults = [
     compensation: "Up to US$0.00 per year",
   },
 ];
-async function main() {
-  const browser = await puppeteer.launch({
-    headless: false,
-  });
-  const page = await browser.newPage();
+async function grapListings(page) {
   await page.goto("https://sfbay.craigslist.org/search/sof");
   const html = await page.content();
   const $ = cheerio.load(html);
@@ -30,7 +26,25 @@ async function main() {
       return { title, url, datePosted, neighborhood };
     })
     .get();
-  console.log(results);
+  return results;
 }
 
+async function scrapJobDescription(page, listings) {
+  for (let i = 0; i < listings.length; i++) {
+    const listing = listings[i];
+    await page.goto(listing.url);
+    const html = await page.content();
+    const $ = cheerio.load(html);
+    
+  }
+
+}
+async function main() {
+  const browser = await puppeteer.launch({
+    headless: false,
+  });
+  const page = await browser.newPage();
+  const listings = await grapListings(page);
+  const listingForJobDescription = await scrapJobDescription(page, listings);
+}
 main();
